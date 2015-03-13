@@ -5,6 +5,7 @@ var file = process.env.HOME + '/Library/Messages/chat.db';
 var applescript = require("./applescript/lib/applescript.js");
 var exec = require('exec');
 var google = require('google');
+var weather = require('weather-js');
 var glob = require('glob');
 
 var exists = fs.existsSync(file);
@@ -93,6 +94,24 @@ function checkMessageText(messageId) {
 						sendMessage(chatter, "g: \"" + rowText.substring(3).substring(0, 8) + "...\": title: " + links[0].title.substring(0, 16) + "... description: " + links[0].description.substring(0, 32) + "... link: " + links[0].link, isGroupChat);
 						return;
 					});
+				} else if (rowText.split(' ', 1)[0] === '.w') {
+					console.log('weather for ' + rowText.substring(3));
+					weather.find({search: rowText.substring(3), degreeType: 'F'}, function(err, result) {
+						if (err || !result) {
+							console.log('no weather for ' +  + rowText.substring(3));
+							return;
+						}
+
+						var wea = {
+							high: result[0].forecast[0].high,
+							low: result[0].forecast[0].low,
+							temp: result[0].current.temperature
+						};
+
+						console.log(chatter, "w: " + rowText.substring(3) + ": current: " + wea.temp + " high: " + wea.high + " low: " + wea.low);
+						sendMessage(chatter, "w: " + rowText.substring(3) + ": current: " + wea.temp + " high: " + wea.high + " low: " + wea.low, isGroupChat);
+
+					});
 				} else if (rowText.split(' ', 1)[0] === '.r') {
 					applescript.execFile(__dirname+'/send_return.AppleScript', [], function(err, result) {
 						if (err) {
@@ -148,7 +167,7 @@ setInterval(function() {
 				var max = rows[0].max;
 				if (max > LAST_SEEN_ID) {
 
-					for (LAST_SEEN_ID; LAST_SEEN_ID <= max; LAST_SEEN_ID++) {
+					for (LAST_SEEN_ID++; LAST_SEEN_ID <= max; LAST_SEEN_ID++) {
 						checkMessageText(LAST_SEEN_ID);
 					}
 				}
