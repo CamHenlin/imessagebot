@@ -158,7 +158,13 @@ function checkMessageText(messageId) {
 
 					var url = rowText.split(protocol + '://')[1]; // get everything after the protocol
 					console.log(url);
-					var htp = require(protocol);
+
+					var htp = {};
+					if (protocol === 'http') {
+						htp = require('follow-redirects').http;
+					} else {
+						htp = require('follow-redirects').https;
+					}
 
 					var options = {
 						host: url.split('/')[0], // host is everything before first /
