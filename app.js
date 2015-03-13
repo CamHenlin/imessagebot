@@ -9,10 +9,8 @@ var weather = require('weather-js');
 var glob = require('glob');
 
 var exists = fs.existsSync(file);
-if (exists) {
-	console.log("we have a file to monitor!");
-} else {
-	console.log("no dice!");
+if (!exists) {
+	return;
 }
 
 // discover if we are running and old version of OS X or not
@@ -46,7 +44,6 @@ var ENABLE_OTHER_SERVICES = false;
 var sending = false;
 
 function checkMessageText(messageId) {
-	console.log('checking: ' + messageId);
 	var SQL = "SELECT DISTINCT message.ROWID, handle.id, message.text, message.is_from_me, message.date, message.date_delivered, message.date_read, chat.chat_identifier, chat.display_name FROM message LEFT OUTER JOIN chat ON chat.room_name = message.cache_roomnames LEFT OUTER JOIN handle ON handle.ROWID = message.handle_id WHERE message.service = 'iMessage' AND message.ROWID = " + messageId + " ORDER BY message.date DESC LIMIT 500";
 
 	db.serialize(function() {
@@ -59,6 +56,7 @@ function checkMessageText(messageId) {
 				if (row.is_from_me || !row || !row.text) {
 					return;
 				}
+
 				console.log(row);
 
 				var chatter;
@@ -153,7 +151,6 @@ db.serialize(function() {
 			var max = rows[0].max;
 			if (max > LAST_SEEN_ID) {
 				LAST_SEEN_ID = max;
-				console.log(max);
 				return;
 			}
 		}
