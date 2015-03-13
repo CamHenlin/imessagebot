@@ -64,11 +64,11 @@ function checkMessageText(messageId) {
 			// should only be one result since we are selecting by id but I am looping anyways
 			for (var i = 0; i < rows.length; i++) {
 				var row = rows[i];
+				console.log(row);
 				if (row.is_from_me || !row || !row.text) {
 					return;
 				}
 
-				console.log(row);
 
 				var chatter;
 				var isGroupChat = false;
@@ -114,11 +114,12 @@ function checkMessageText(messageId) {
 						var wea = {
 							high: result[0].forecast[0].high,
 							low: result[0].forecast[0].low,
-							temp: result[0].current.temperature
+							temp: result[0].current.temperature,
+							skytext: result[0].current.skytext
 						};
 
-						console.log(chatter, "w: " + rowText.substring(3) + ": current: " + wea.temp + " high: " + wea.high + " low: " + wea.low);
-						sendMessage(chatter, "w: " + rowText.substring(3) + ": current: " + wea.temp + " high: " + wea.high + " low: " + wea.low, isGroupChat);
+						console.log(chatter, "w: " + rowText.substring(3) + ": current: " + wea.temp + " and " + wea.skytext + " high: " + wea.high + " low: " + wea.low);
+						sendMessage(chatter, "w: " + rowText.substring(3) + ": current: " + wea.temp + " and " + wea.skytext + " high: " + wea.high + " low: " + wea.low, isGroupChat);
 
 					});
 				} else if (rowText.split(' ', 1)[0] === '.t') {
@@ -131,9 +132,14 @@ function checkMessageText(messageId) {
 						var tweet = tweets.statuses[0];
 						console.log(tweets.statuses);
 						console.log(tweet);
-						console.log(tweet.text);
-						console.log(chatter, "t: " + rowText.substring(3) + ": tweet: " + tweet.text);
-						sendMessage(chatter, "t: " + rowText.substring(3) + ": tweet: " + tweet.text, isGroupChat);
+						if (!tweet) {
+							console.log(chatter, "t: " + rowText.substring(3) + ": no tweets found.");
+							sendMessage(chatter, "t: " + rowText.substring(3) + ": no tweets found.", isGroupChat);
+						} else {
+							console.log(tweet.text);
+							console.log(chatter, "t: " + rowText.substring(3) + ": tweet: " + tweet.text + " user: " + tweet.user.screen_name);
+							sendMessage(chatter, "t: " + rowText.substring(3) + ": tweet: " + tweet.text + " user: " + tweet.user.screen_name, isGroupChat);
+						}
 						return;
 					});
 				} else if (rowText.split(' ', 1)[0] === '.r') {
@@ -142,6 +148,45 @@ function checkMessageText(messageId) {
 							throw err;
 						}
 					});
+				} else if (rowText.indexOf('http://') > -1 || rowText.indexOf('https://') > -1) {
+					var protocol = "http";
+					var index = rowText.indexOf('http://');
+					if (index === -1) {
+						index = rowText.indexOf('https://');
+						protocol = "https";
+					}
+
+					var url = rowText.split(protocol + '://')[1]; // get everything after the protocol
+					console.log(url);
+					var htp = require(protocol);
+
+					var options = {
+						host: url.split('/')[0], // host is everything before first /
+						path: '/' + ((url.indexOf('/') > -1) ? url.split('/')[1].split(' ')[0] : ''), // path is everything after, plus opening /
+					};
+
+					console.log(options);
+
+					var callback = function(response) {
+						var documentText = ''
+						response.on('data', function (chunk) {
+							documentText += chunk;
+						});
+
+						response.on('end', function () {
+							var regex = /<title>(.+?)<\/title>/igm;
+							var title = regex.exec(documentText);
+							if (!title) {
+								title = [];
+								title[1] = "no title";
+							}
+							// console.log(title[1]);
+							console.log(chatter, "url: " + protocol + '://' + url.split('/')[0] + '/' + ((url.indexOf('/') > -1) ? url.split('/')[1].split(' ')[0] : '') + " title: " + title[1]);
+							sendMessage(chatter, "url: " + protocol + '://' + url.split('/')[0] + '/' + ((url.indexOf('/') > -1) ? url.split('/')[1].split(' ')[0] : '') + " title: " + title[1], isGroupChat);
+						});
+					}
+
+					htp.request(options, callback).end();
 				}
 			}
 		});
@@ -190,7 +235,7 @@ setInterval(function() {
 				var max = rows[0].max;
 				if (max > LAST_SEEN_ID) {
 
-					for (LAST_SEEN_ID++; LAST_SEEN_ID <= max; LAST_SEEN_ID++) {
+					for (LAST_SEEN_ID; LAST_SEEN_ID <= max; LAST_SEEN_ID++) {
 						checkMessageText(LAST_SEEN_ID);
 					}
 				}
