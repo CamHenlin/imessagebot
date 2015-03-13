@@ -17,7 +17,7 @@ node app
 ```
 
 ## How to use:
-Send an iMessage to the logged in iMessage account, or add the account to an existing group chat. If you preface the message with '.g', the bot will google search for the rest of the text in the message, and return the first result. And '.w' and then a location will send you the weather!
+Send an iMessage to the logged in iMessage account, or add the account to an existing group chat. If you preface the message with '.g', the bot will google search for the rest of the text in the message, and return the first result. And '.w' and then a location will send you the weather! '.t' to search twitter!
 
 `Note: Sometimes using AppleScript to send iMessages can be unreliable and cause an error dialog to pop up in Messages.app, which will in turn prevent future messages from being sent. If you suspect this has happened, you can send the message '.r', which will cause the bot to attempt to clear error messages in Messages.app.`
 

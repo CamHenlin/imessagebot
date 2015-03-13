@@ -7,6 +7,14 @@ var exec = require('exec');
 var google = require('google');
 var weather = require('weather-js');
 var glob = require('glob');
+var Twitter = require('twitter');
+
+var client = new Twitter({
+	consumer_key: '',
+	consumer_secret: '',
+	access_token_key: '-',
+	access_token_secret: ''
+});
 
 var exists = fs.existsSync(file);
 if (!exists) {
@@ -112,6 +120,21 @@ function checkMessageText(messageId) {
 						console.log(chatter, "w: " + rowText.substring(3) + ": current: " + wea.temp + " high: " + wea.high + " low: " + wea.low);
 						sendMessage(chatter, "w: " + rowText.substring(3) + ": current: " + wea.temp + " high: " + wea.high + " low: " + wea.low, isGroupChat);
 
+					});
+				} else if (rowText.split(' ', 1)[0] === '.t') {
+					console.log('tweet for ' + rowText.substring(3));
+					client.get('search/tweets', {q: rowText.substring(3)}, function(error, tweets, response) {
+						if (error) {
+							return;
+						}
+
+						var tweet = tweets.statuses[0];
+						console.log(tweets.statuses);
+						console.log(tweet);
+						console.log(tweet.text);
+						console.log(chatter, "t: " + rowText.substring(3) + ": tweet: " + tweet.text);
+						sendMessage(chatter, "t: " + rowText.substring(3) + ": tweet: " + tweet.text, isGroupChat);
+						return;
 					});
 				} else if (rowText.split(' ', 1)[0] === '.r') {
 					applescript.execFile(__dirname+'/send_return.AppleScript', [], function(err, result) {

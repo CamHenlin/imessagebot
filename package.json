@@ -14,6 +14,7 @@
     "glob": "^4.3.5",
     "google": "^0.6.0",
     "sqlite3": "^3.0.4",
+    "twitter": "^1.2.4",
     "weather": "^0.1.0",
     "weather-js": "^1.0.1"
   }
