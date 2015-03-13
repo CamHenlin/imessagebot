@@ -17,7 +17,7 @@ node app
 ```
 
 ## How to use:
-Send an iMessage to the logged in iMessage account. If you preface the message with '.g', the bot will google search for the rest of the text in the message, and return the first result. And '.w' and then a location will send you the weather!
+Send an iMessage to the logged in iMessage account, or add the account to an existing group chat. If you preface the message with '.g', the bot will google search for the rest of the text in the message, and return the first result. And '.w' and then a location will send you the weather!
 
 `Note: Sometimes using AppleScript to send iMessages can be unreliable and cause an error dialog to pop up in Messages.app, which will in turn prevent future messages from being sent. If you suspect this has happened, you can send the message '.r', which will cause the bot to attempt to clear error messages in Messages.app.`
 
@@ -25,7 +25,7 @@ Send an iMessage to the logged in iMessage account. If you preface the message w
 It seems to me that there is a way to access private APIs within OS X to send messages without the use of Messages.app, but I haven't figured out how to do so yet. Maybe you can help out and contribute? You can make this less clunky by helping out with this project [nodeprivatemessageskit](https://github.com/camhenlin/nodeprivatemessageskit)
 
 ## Why did you make this?
-Why not?
+To get more people interested in hacking around with iMessages! This project is much more simple than the other iMessages projects listed below, and is more accessible for people to hack on and extend!
 
 Based on code from: [iMessageWebClient](https://github.com/CamHenlin/iMessageWebClient)
 And: [iMessageClient](https://github.com/CamHenlin/imessageclient)
