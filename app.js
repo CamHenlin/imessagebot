@@ -142,6 +142,20 @@ function checkMessageText(messageId) {
 						}
 						return;
 					});
+				} else if (rowText.split(' ', 1)[0] === '.tweet') {
+					console.log('tweet ' + rowText.split('.tweet ')[1]);
+					client.post('statuses/update', {status: rowText.split('.tweet ')[1]}, function(error, tweet, response) {
+						if (error) {
+							console.log(error);
+							console.log(response);
+							sendMessage(chatter, "error tweeting: " + error, isGroupChat);
+							return;
+						}
+
+						console.log(chatter, "tweeted: " + rowText.split('.tweet ')[1]);
+						sendMessage(chatter, "tweeted: " + rowText.split('.tweet ')[1], isGroupChat);
+						return;
+					});
 				} else if (rowText.split(' ', 1)[0] === '.r') {
 					applescript.execFile(__dirname+'/send_return.AppleScript', [], function(err, result) {
 						if (err) {

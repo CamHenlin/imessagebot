@@ -22,7 +22,8 @@ Send an iMessage to the logged in iMessage account, or add the account to an exi
 The bot will then respond to a list of commands:
 
 - ```.g some search term``` will search for "some search term" in google, and return the first result to the chat
-- ```.t some search term``` will search twitter for "some search term", and return the first result to the chat
+- ```.t some search term``` will search twitter for "some search term", and return the first result to the chat (twitter api key must be set up at top of app.js)
+- ```.tweet some text``` will tweet some text (twitter api key must be set up at top of app.js)
 - ```.w some location``` will return the weather for "some location" to the chat
 - the bot will also check the title of any web page that has its url pssted into the chat
 
