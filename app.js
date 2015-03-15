@@ -152,8 +152,10 @@ function checkMessageText(messageId) {
 							return;
 						}
 
-						console.log(chatter, "tweeted: " + rowText.split('.tweet ')[1]);
-						sendMessage(chatter, "tweeted: " + rowText.split('.tweet ')[1], isGroupChat);
+						console.log(tweet);
+
+						console.log(chatter, "tweeted: " + rowText.split('.tweet ')[1] + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str);
+						sendMessage(chatter, "tweeted: " + rowText.split('.tweet ')[1] + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
 						return;
 					});
 				} else if (rowText.split(' ', 1)[0] === '.r') {
