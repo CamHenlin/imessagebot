@@ -8,6 +8,7 @@ var google = require('google');
 var weather = require('weather-js');
 var glob = require('glob');
 var Twitter = require('twitter');
+var urban = require('urban');
 
 var client = new Twitter({
 	consumer_key: '',
@@ -156,6 +157,18 @@ function checkMessageText(messageId) {
 						console.log(chatter, "tweeted: " + rowText.split('.tweet ')[1] + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str);
 						sendMessage(chatter, "tweeted: " + rowText.split('.tweet ')[1] + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
 						return;
+					});
+				} else if (rowText.split(' ', 1)[0] === '.u') {
+					console.log('urbandictionary for for ' + rowText.substring(3));
+					urban(rowText.substring(3)).first(function(data) {
+						console.log(data);
+						if (!data) {
+							console.log(chatter, "no urbandictionary entry for: " + rowText.substring(3));
+							sendMessage(chatter, "no urbandictionary entry for: " + rowText.substring(3), isGroupChat);
+							return;
+						}
+						console.log(chatter, "urbandictionary entry for: " + rowText.substring(3) + ": " + data.definition + " url: " + data.permalink);
+						sendMessage(chatter, "urbandictionary entry for: " + rowText.substring(3) + ": " + data.definition + " url: " + data.permalink, isGroupChat);
 					});
 				} else if (rowText.split(' ', 1)[0] === '.r') {
 					applescript.execFile(__dirname+'/send_return.AppleScript', [], function(err, result) {

@@ -25,6 +25,7 @@ The bot will then respond to a list of commands:
 - ```.t some search term``` will search twitter for "some search term", and return the first result to the chat (twitter api key must be set up at top of app.js)
 - ```.tweet some text``` will tweet some text (twitter api key must be set up at top of app.js)
 - ```.w some location``` will return the weather for "some location" to the chat
+- ```.u some text``` will look up some text on urbandictionary
 - the bot will also check the title of any web page that has its url pssted into the chat
 
 `Note: Sometimes using AppleScript to send iMessages can be unreliable and cause an error dialog to pop up in Messages.app, which will in turn prevent future messages from being sent. If you suspect this has happened, you can send the message '.r', which will cause the bot to attempt to clear error messages in Messages.app.`
