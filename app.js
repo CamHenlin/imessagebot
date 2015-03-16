@@ -69,7 +69,6 @@ function checkMessageText(messageId) {
 					return;
 				}
 
-
 				var chatter;
 				var isGroupChat = false;
 				if (row.chat_identifier === null) {
