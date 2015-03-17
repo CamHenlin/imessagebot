@@ -144,7 +144,7 @@ function checkMessageText(messageId) {
 					});
 				} else if (rowText.split(' ', 1)[0] === '.tweet') {
 					console.log('tweet ' + rowText.split('.tweet ')[1]);
-					client.post('statuses/update', {status: rowText.split('.tweet ')[1]}, function(error, tweet, response) {
+					client.post('statuses/update', {status: rowText.split('.tweet ')[1].substring(0, 140)}, function(error, tweet, response) {
 						if (error) {
 							console.log(error);
 							console.log(response);
@@ -154,8 +154,8 @@ function checkMessageText(messageId) {
 
 						console.log(tweet);
 
-						console.log(chatter, "tweeted: " + rowText.split('.tweet ')[1] + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str);
-						sendMessage(chatter, "tweeted: " + rowText.split('.tweet ')[1] + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
+						console.log(chatter, "tweeted: " + rowText.split('.tweet ')[1].substring(0, 140) + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str);
+						sendMessage(chatter, "tweeted: " + rowText.split('.tweet ')[1].substring(0, 140) + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
 						return;
 					});
 				} else if (rowText.split(' ', 1)[0] === '.u') {
@@ -194,9 +194,19 @@ function checkMessageText(messageId) {
 						htp = require('follow-redirects').https;
 					}
 
+					var path = "";
+					for (var i = 1; i < url.split('/').length; i++) {
+						var temp = url.split('/')[i]
+						if (temp.indexOf(' ') > -1) {
+							temp = temp.split(' ')[0];
+						}
+
+						path += '/' + temp;
+					}
+
 					var options = {
-						host: url.split('/')[0], // host is everything before first /
-						path: '/' + ((url.indexOf('/') > -1) ? url.split('/')[1].split(' ')[0] : ''), // path is everything after, plus opening /
+						host: ((url.indexOf('/') > -1) ? url.split('/')[0] : url.split(' ')[0]), // host is everything before first /
+						path: path, // path is everything after, plus opening /
 					};
 
 					console.log(options);
@@ -214,13 +224,20 @@ function checkMessageText(messageId) {
 								title = [];
 								title[1] = "no title";
 							}
-							// console.log(title[1]);
-							console.log(chatter, "url: " + protocol + '://' + url.split('/')[0] + '/' + ((url.indexOf('/') > -1) ? url.split('/')[1].split(' ')[0] : '') + " title: " + title[1]);
-							sendMessage(chatter, "url: " + protocol + '://' + url.split('/')[0] + '/' + ((url.indexOf('/') > -1) ? url.split('/')[1].split(' ')[0] : '') + " title: " + title[1], isGroupChat);
+
+							console.log(chatter, "url: " + protocol + '://' + url.split('/')[0] + path + " title: " + title[1]);
+							sendMessage(chatter, "url: " + protocol + '://' + url.split('/')[0] + path + " title: " + title[1], isGroupChat);
 						});
 					}
 
-					htp.request(options, callback).end();
+					var request = htp.request(options, callback);
+
+					request.on('error', function (error) {
+						console.log(chatter, "url: " + protocol + '://' + url.split('/')[0] + path + " error");
+						sendMessage(chatter, "url: " + protocol + '://' + url.split('/')[0] + path + " error", isGroupChat);
+					});
+
+					request.end();
 				}
 			}
 		});
