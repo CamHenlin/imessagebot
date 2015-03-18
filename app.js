@@ -52,6 +52,21 @@ var LAST_SEEN_ID = 0;
 var ENABLE_OTHER_SERVICES = false;
 var sending = false;
 
+// stream status updates if they mention our user
+// update with @username
+client.stream('statuses/filter', {track: '@'},  function(stream){
+	stream.on('data', function(tweet) {
+		// insert the chat that you want to send messages to here
+		var chatter = "";
+		console.log(chatter, "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text);
+		sendMessage(chatter, "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text, true);
+	});
+
+	stream.on('error', function(error) {
+		console.log(error);
+	});
+});
+
 function checkMessageText(messageId) {
 	var SQL = "SELECT DISTINCT message.ROWID, handle.id, message.text, message.is_from_me, message.date, message.date_delivered, message.date_read, chat.chat_identifier, chat.display_name FROM message LEFT OUTER JOIN chat ON chat.room_name = message.cache_roomnames LEFT OUTER JOIN handle ON handle.ROWID = message.handle_id WHERE message.service = 'iMessage' AND message.ROWID = " + messageId + " ORDER BY message.date DESC LIMIT 500";
 	if (OLD_OSX) {
