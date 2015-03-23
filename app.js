@@ -54,10 +54,10 @@ var sending = false;
 
 // stream status updates if they mention our user
 // update with @username
-client.stream('statuses/filter', {track: '@'},  function(stream){
+client.stream('statuses/filter', {track: '@typicalyospos'},  function(stream){
 	stream.on('data', function(tweet) {
 		// insert the chat that you want to send messages to here
-		var chatter = "";
+		var chatter = "Who Watches the Watchmen?";
 		console.log(chatter, "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text);
 		sendMessage(chatter, "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text, true);
 	});
