@@ -185,6 +185,17 @@ function checkMessageText(messageId) {
 						console.log(chatter, "urbandictionary entry for: " + rowText.substring(3) + ": " + data.definition + " url: " + data.permalink);
 						sendMessage(chatter, "urbandictionary entry for: " + rowText.substring(3) + ": " + data.definition + " url: " + data.permalink, isGroupChat);
 					});
+
+
+				} else if (rowText.split(' ', 1)[0] === '.i') {
+					var text = rowText.substring(3);
+					var sendTo = text.split(' ')[0];
+					text = rowText.substring(sendTo.length + 4);
+					sendMessage(sendTo, chatter + " says: " + text, true);
+					setTimeout(function() {
+						console.log(chatter, "sent: " + text + " to: " + sendTo);
+						sendMessage(chatter, "sent: " + text + " to: " + sendTo, isGroupChat);
+					}.bind(this), 3000);
 				} else if (rowText.split(' ', 1)[0] === '.r') {
 					applescript.execFile(__dirname+'/send_return.AppleScript', [], function(err, result) {
 						if (err) {

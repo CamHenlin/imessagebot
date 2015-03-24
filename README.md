@@ -26,6 +26,7 @@ The bot will then respond to a list of commands:
 - ```.tweet some text``` will tweet some text (twitter api key must be set up at top of app.js)
 - ```.w some location``` will return the weather for "some location" to the chat
 - ```.u some text``` will look up some text on urbandictionary
+- ```.i some imessage address some text``` will send an iMessage directly to some imessage address with the contents some text
 - the bot will also check the title of any web page that has its url pssted into the chat
 - the bot will also report status updates that mention the user set on line 57 if the twitter api keys are set up.
 
