@@ -104,7 +104,11 @@ function checkMessageText(messageId) {
 				}
 
 				var rowText = row.text;
-				rowText = rowText.toLowerCase();
+				// rowText = rowText.toLowerCase();
+				if (rowText.split(' ').length < 2) {
+					console.log('dropping: ' + rowText);
+					return;
+				}
 
 				// check for google search:
 				if (rowText.split(' ', 1)[0] === '.g') {
