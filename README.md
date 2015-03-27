@@ -24,6 +24,7 @@ The bot will then respond to a list of commands:
 - ```.g some search term``` will search for "some search term" in google, and return the first result to the chat
 - ```.t some search term``` will search twitter for "some search term", and return the first result to the chat (twitter api key must be set up at top of app.js)
 - ```.follow @some username``` will follow @some username on twitter
+- ```.fav link to some tweet``` will fav a link to some tweet
 - ```.tweet some text``` will tweet some text (twitter api key must be set up at top of app.js)
 - ```.w some location``` will return the weather for "some location" to the chat
 - ```.u some text``` will look up some text on urbandictionary

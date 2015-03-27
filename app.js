@@ -193,6 +193,22 @@ function checkMessageText(messageId) {
 						sendMessage(chatter, "followed: " + rowText.split('.follow ')[1].substring(0, 140), isGroupChat);
 						return;
 					});
+				} else if (rowText.split(' ', 1)[0] === '.fav') {
+					console.log('fav ' + rowText.split('.fav ')[1]);
+					client.post('favorites/create', { id: rowText.split('status/')[1] }, function(error, tweet, response) {
+						if (error) {
+							console.log(error);
+							console.log(response);
+							sendMessage(chatter, "error favoriting: " + JSON.stringify(error), isGroupChat);
+							return;
+						}
+
+						console.log(tweet);
+
+						console.log(chatter, "favorited: " + rowText.split('status/')[1]);
+						sendMessage(chatter, "favorited: " + rowText.split('status/')[1], isGroupChat);
+						return;
+					});
 				} else if (rowText.split(' ', 1)[0] === '.u') {
 					console.log('urbandictionary for for ' + rowText.substring(3));
 					urban(rowText.substring(3)).first(function(data) {
