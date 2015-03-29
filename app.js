@@ -105,7 +105,7 @@ function checkMessageText(messageId) {
 
 				var rowText = row.text;
 				// rowText = rowText.toLowerCase();
-				if (rowText.split(' ').length < 2) {
+				if (rowText.split(' ').length < 2 && rowText.indexOf('.') === 0) {
 					console.log('dropping: ' + rowText);
 					return;
 				}
@@ -177,6 +177,24 @@ function checkMessageText(messageId) {
 						sendMessage(chatter, "tweeted: " + rowText.split('.tweet ')[1].substring(0, 140) + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
 						return;
 					});
+				} else if (rowText.split(' ', 1)[0] === '.reply') {
+					var replyToStatus = rowText.split('status/')[1].split(' ')[0];
+					var reply = rowText.split(replyToStatus)[1];
+					console.log('tweet ' + rowText.split('.reply ')[1]);
+					client.post('statuses/update', {in_reply_to_status_id: replyToStatus, status: reply }, function(error, tweet, response) {
+						if (error) {
+							console.log(error);
+							console.log(response);
+							sendMessage(chatter, "error tweeting: " + error, isGroupChat);
+							return;
+						}
+
+						console.log(tweet);
+
+						console.log(chatter, "tweeted: " + reply + " in response to " + replyToStatus + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str);
+						sendMessage(chatter, "tweeted: " + reply + " in response to " + replyToStatus + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
+						return;
+					});
 				} else if (rowText.split(' ', 1)[0] === '.follow') {
 					console.log('follow ' + rowText.split('.follow ')[1]);
 					client.post('friendships/create', {screen_name: rowText.split('.follow ')[1].substring(0, 140), follow: true}, function(error, tweet, response) {
@@ -238,6 +256,8 @@ function checkMessageText(messageId) {
 							throw err;
 						}
 					});
+				} else if (rowText.split(' ', 1)[0] === '.yospost') {
+
 				} else if (rowText.indexOf('http://') > -1 || rowText.indexOf('https://') > -1) {
 					var protocol = "http";
 					var index = rowText.indexOf('http://');
@@ -355,4 +375,4 @@ setInterval(function() {
 			}
 		}.bind(this));
 	}.bind(this));
-}, 2500);
+}, 5000);
