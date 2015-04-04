@@ -14,6 +14,7 @@
     "follow-redirects": "0.0.3",
     "glob": "^4.3.5",
     "google": "^0.6.0",
+    "iMessageModule": "0.0.4",
     "querystring": "^0.2.0",
     "request": "^2.54.0",
     "sqlite3": "^3.0.4",

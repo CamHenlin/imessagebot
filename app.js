@@ -12,6 +12,7 @@ var querystring = require('querystring');
 var urban = require('urban');
 var request = require('request');
 var request = request.defaults({jar: true});
+var imessagemodule = require('iMessageModule');
 
 var client = new Twitter({
 	consumer_key: '',
@@ -21,7 +22,7 @@ var client = new Twitter({
 });
 
 var saAccount = {
-	username: " Yosposter",
+	username: " ",
 	password: ""
 };
 
@@ -88,9 +89,9 @@ if (saAccount.username !== "" && saAccount.password !== "") {
 
 	request.post({ url: "http://forums.somethingawful.com/account.php", form: post_data }, function(error, response, body) {
 		if (!error && response.statusCode === 200) {
-			console.log(body);
+			//console.log(body);
 		} else {
-			console.log(response);
+			//console.log(response);
 			//console.log(body);
 			//console.log(error);
 		}
@@ -171,9 +172,9 @@ function saNewThread(threadTitle, threadText, callback) {
 
 		request.post({ url: "http://forums.somethingawful.com/newthread.php", form: post_data }, function(error, response, body) {
 			if (!error && response.statusCode === 200) {
-				console.log(body);
+				//console.log(body);
 			} else {
-				console.log(response);
+				//console.log(response);
 				//console.log(body);
 				//console.log(error);
 			}
@@ -209,9 +210,9 @@ function saNewPostInThread(threadUrl, postText, callback) {
 
 		request.post({ url: "http://forums.somethingawful.com/newreply.php", form: post_data }, function(error, response, body) {
 			if (!error && response.statusCode === 200) {
-				console.log(body);
+				//console.log(body);
 			} else {
-				console.log(response);
+				//console.log(response);
 				//console.log(body);
 				//console.log(error);
 			}
@@ -551,26 +552,7 @@ function checkMessageText(messageId) {
 }
 
 function sendMessage(to, message, groupChat) {
-	if (sending) { return; }
-	sending = true;
-
-	if (groupChat) {
-		applescript.execFile(__dirname+'/sendmessage.AppleScript', [[to], message, FULL_KEYBOARD_ACCESS], function(err, result) {
-			if (err) {
-				throw err;
-			}
-
-			sending = false;
-		}.bind(this));
-	} else {
-		applescript.execFile(__dirname+'/sendmessage_single.AppleScript', [[to], message, FULL_KEYBOARD_ACCESS, ENABLE_OTHER_SERVICES], function(err, result) {
-			if (err) {
-				throw err;
-			}
-
-			sending = false;
-		}.bind(this));
-	}
+	imessagemodule.sendMessage(to, message);
 }
 
 db.serialize(function() {
@@ -588,10 +570,9 @@ db.serialize(function() {
 setInterval(function() {
 	db.serialize(function() {
 		db.all("SELECT MAX(ROWID) AS max FROM message", function(err, rows) {
-			if (rows) {
+			if (rows && !sending) {
 				var max = rows[0].max;
 				if (max > LAST_SEEN_ID) {
-
 					for (LAST_SEEN_ID; LAST_SEEN_ID <= max; LAST_SEEN_ID++) {
 						checkMessageText(LAST_SEEN_ID);
 					}
@@ -599,4 +580,5 @@ setInterval(function() {
 			}
 		}.bind(this));
 	}.bind(this));
-}, 5000);
+}, 3000);
+
