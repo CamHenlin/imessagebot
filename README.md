@@ -45,5 +45,6 @@ To get more people interested in hacking around with iMessages! This project is 
 Based on code from: [iMessageWebClient](https://github.com/CamHenlin/iMessageWebClient)
 And: [iMessageClient](https://github.com/CamHenlin/imessageclient)
 
+Uses [iMessageModule](https://github.com/CamHenlin/iMessageModule).
 
 ![made with a mac](http://henlin.org/mac.gif "made with a mac")
