@@ -26,6 +26,8 @@ var saAccount = {
 	password: ""
 };
 
+var main_chat_title = '';
+
 var exists = fs.existsSync(file);
 if (!exists) {
 	return;
@@ -66,7 +68,7 @@ var sending = false;
 client.stream('statuses/filter', {track: '@typicalyospos'},  function(stream){
 	stream.on('data', function(tweet) {
 		// insert the chat that you want to send messages to here
-		var chatter = "Who Watches the Watchmen?";
+		var chatter = main_chat_title;
 		console.log(chatter, "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text);
 		sendMessage(chatter, "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text, true);
 	});
@@ -411,6 +413,60 @@ function SAReplyThread(rowText, chatter, isGroupChat) {
 	});
 }
 
+function getLatestImage(chatter, callback) {
+	var sql = 'SELECT attachment.filename as filename FROM message LEFT OUTER JOIN chat ON chat.room_name = message.cache_roomnames LEFT OUTER JOIN handle ON handle.ROWID = message.handle_id LEFT OUTER JOIN message_attachment_join ON message_attachment_join.message_id = message.ROWID LEFT OUTER JOIN attachment ON attachment.ROWID = message_attachment_join.attachment_id WHERE chat.display_name = \'' + chatter + '\' AND attachment.filename IS NOT NULL ORDER BY message.date DESC LIMIT 1';
+	db.serialize(function() {
+		db.all(sql, function(err, rows) {
+			if (rows) {
+				console.log(rows);
+				callback(rows[0].filename);
+
+			}
+		}.bind(this));
+	}.bind(this));
+}
+
+function tweetLatestImage(rowText, chatter, isGroupChat) {
+	console.log('tweet image text ' + rowText.split('.twimg ')[1]);
+
+	getLatestImage(chatter, function(filename) {
+		console.log('filename!')
+		console.log(filename)
+		// Make post request on media endpoint. Pass file data as media parameter
+		client.post('media/upload', { media: require('fs').readFileSync(filename.replace('~', process.env.HOME)) }, function(error, media, response) {
+
+			if (error) {
+				console.log('error')
+				console.log(error)
+			}
+
+			// If successful, a media object will be returned.
+			console.log(media);
+
+			// Lets tweet it
+			var status = {
+				status: rowText.split('.twimg ')[1].substring(0, 140),
+				media_ids: media.media_id_string // Pass the media id string
+			}
+
+			client.post('statuses/update', status, function(error, tweet, response) {
+				if (error) {
+					console.log(error);
+					console.log(response);
+					sendMessage(chatter, "error tweeting: " + error, isGroupChat);
+					return;
+				}
+
+				console.log(tweet);
+
+				console.log(chatter, "tweeted: " + rowText.split('.twimg ')[1].substring(0, 140) + " with image, url: https://twitter.com/typicalyospos/status/" + tweet.id_str);
+				sendMessage(chatter, "tweeted: " + rowText.split('.twimg ')[1].substring(0, 140) + " with image, url: https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
+				return;
+			});
+		}.bind(this));
+	}.bind(this));
+}
+
 function URLLookup(rowText, chatter, isGroupChat) {
 	var protocol = "http";
 	var index = rowText.indexOf('http://');
@@ -521,12 +577,14 @@ function checkMessageText(messageId) {
 				// check for google search:
 				if (rowText.split(' ', 1)[0] === '.g') {
 					googleSearch(rowText, chatter, isGroupChat);
-				} else if (rowText.split(' ', 1)[0] === '.w') {
+				} else if (rowText.split(' ', 1)[0] === '.wea') {
 					weatherSearch(rowText, chatter, isGroupChat);
 				} else if (rowText.split(' ', 1)[0] === '.t') {
 					tweetSearch(rowText, chatter, isGroupChat);
 				} else if (rowText.split(' ', 1)[0] === '.tweet') {
 					tweetStatus(rowText, chatter, isGroupChat);
+				} else if (rowText.split(' ', 1)[0] === '.twimg') {
+					tweetLatestImage(rowText, chatter, isGroupChat);
 				} else if (rowText.split(' ', 1)[0] === '.reply') {
 					tweetReply(rowText, chatter, isGroupChat);
 				} else if (rowText.split(' ', 1)[0] === '.follow') {
