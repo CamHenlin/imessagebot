@@ -28,7 +28,7 @@ The bot will then respond to a list of commands:
 - ```.tweet some text``` will tweet some text (twitter api key must be set up at top of app.js)
 - ```.twimg some text``` will tweet some text AND the last image sent in the current chat (twitter api key must be set up at top of app.js)
 - ```.reply somestatusurl @someperson some text``` will a reply to @someperson's somestatusurl some text (twitter api key must be set up at top of app.js)
-- ```.w some location``` will return the weather for "some location" to the chat
+- ```.wea some location``` will return the weather for "some location" to the chat
 - ```.u some text``` will look up some text on urbandictionary
 - ```.i some imessage address some text``` will send an iMessage directly to some imessage address with the contents some text
 - the bot will also check the title of any web page that has its url pssted into the chat
