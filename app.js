@@ -2,16 +2,14 @@ var sqlite3 = require('sqlite3').verbose();
 var fs = require("fs");
 var dir = process.env.HOME + '/Library/Messages/';
 var file = process.env.HOME + '/Library/Messages/chat.db';
+var applescript = require("./applescript/lib/applescript.js");
 var exec = require('exec');
+var google = require('google');
 var weather = require('weather-js');
 var glob = require('glob');
 var Twitter = require('twitter');
 var querystring = require('querystring');
-var googleIt = require('google-it');
-var ddg = require('ddg');
 var urban = require('urban');
-var eightball = require('8ball');
-var Quote = require('inspirational-quotes');
 var request = require('request');
 var request = request.defaults({jar: true});
 var imessagemodule = require('iMessageModule');
@@ -24,11 +22,9 @@ var client = new Twitter({
 });
 
 var saAccount = {
-	username: "",
+	username: " ",
 	password: ""
 };
-
-var giphyApiKey = ``
 
 var main_chat_title = '';
 
@@ -62,16 +58,14 @@ exec('defaults read NSGlobalDomain AppleKeyboardUIMode', function(err, out, code
 // read the Messages.app sqlite db
 var db = new sqlite3.Database(file);
 
-// sean fix for db read being slow with sqlite3 maybe it works?
-db.run('PRAGMA journal_mode = WAL;' );
-
 // internally used variables
 var LAST_SEEN_ID = 0;
+var ENABLE_OTHER_SERVICES = false;
 var sending = false;
 
 // stream status updates if they mention our user
 // update with @username
-client.stream('statuses/filter', {track: '@'},  function(stream){
+client.stream('statuses/filter', {track: '@typicalyospos'},  function(stream){
 	stream.on('data', function(tweet) {
 		// insert the chat that you want to send messages to here
 		var chatter = main_chat_title;
@@ -121,13 +115,6 @@ function getPostKeys(threadId, callback) {
 
 		console.log(formKey);
 		console.log(formCookie);
-
-		if (!formKey) {
-
-			console.log(`no form, sorry`)
-
-			return callback()
-		}
 
 		formKey = formKey[0];
 		formKey = valueRegex.exec(formKey)[0].split('"')[1];
@@ -238,13 +225,16 @@ function saNewPostInThread(threadUrl, postText, callback) {
 }
 
 function googleSearch(rowText, chatter, isGroupChat) {
-	var query = rowText.substring(3);
-		googleIt({'query': query}).then(res => {
-			console.log(chatter, `g: ${res[0].link}`, isGroupChat)
-			sendMessage(chatter, `g: ${res[0].link}`, isGroupChat)
-		}).catch(e => {
-			console.error(e)
-		})
+	google(rowText.substring(3), function(err, next, links) {
+		if (!links) {
+			return;
+		}
+
+		console.log(links[0]);
+		console.log(chatter, "g: \"" + rowText.substring(3).substring(0, 8) + "...\": title: " + links[0].title.substring(0, 16) + "... description: " + links[0].description.substring(0, 32) + "... link: " + links[0].link);
+		sendMessage(chatter, "g: \"" + rowText.substring(3).substring(0, 8) + "...\": title: " + links[0].title.substring(0, 16) + "... description: " + links[0].description.substring(0, 32) + "... link: " + links[0].link, isGroupChat);
+		return;
+	});
 }
 
 function weatherSearch(rowText, chatter, isGroupChat) {
@@ -288,17 +278,6 @@ function tweetSearch(rowText, chatter, isGroupChat) {
 		}
 		return;
 	});
-}
-
-function latestTrump(rowText, chatter, isGroupChat) {
-	client.get('statuses/user_timeline', { screen_name: `realDonaldTrump`, count: 1 }, (err, tweet, res) => {
-		if(err) console.log(err)
-		// console.log(`${Object.keys(tweet[0])}`)
-		// console.log(`${JSON.stringify(tweet[0].entities.urls[0])}`)
-		const trumpURL = tweet[0].entities.urls[0].expanded_url
-		console.log(chatter, `trump: ${trumpURL}`, isGroupChat)
-		sendMessage(chatter, `trump: ${trumpURL}`, isGroupChat)
-	})
 }
 
 function tweetStatus(rowText, chatter, isGroupChat) {
@@ -389,95 +368,6 @@ function urbandictionarySearch(rowText, chatter, isGroupChat) {
 	});
 }
 
-function eightBall(rowText, chatter, isGroupChat) {
-	var answer = eightball()
-	console.log('eightball for ' + rowText.substring(3));
-	console.log('eight: ' + answer)
-	sendMessage(chatter, 'eight: ' + answer, isGroupChat);
-}
-
-function inspirationalQuote(rowText, chatter, isGroupChat) {
-	var randomQuote = Quote.getRandomQuote();
-	console.log('random quote: ' + randomQuote);
-	sendMessage(chatter, 'quote: ' + randomQuote);
-}
-
-function giphySearch(rowText, chatter, isGroupChat) {
-	let url = `http://api.giphy.com/v1/gifs/search?q=${rowText.substring(3)}&api_key=${giphyApiKey}`
-	request.get({ url }, function(err, res, body) {
-		if (!err && res.statusCode === 200) {
-			var results = JSON.parse(body)
-			// console.log(Object.keys(results.data[0]))
-			console.log(`giphy for ${rowText.substring(3)}`)
-			console.log(`giphy: ${results.data[0].url}`)
-			sendMessage(chatter, `giphy: ${results.data[0].url}`, isGroupChat)
-		} else {
-			console.log(err)
-			//console.log(response);
-			//console.log(body);
-			//console.log(error);
-		}
-	});
-}
-
-function getFortune(rowText, chatter, isGroupChat) {
-	let url = `http://fortunecookieapi.herokuapp.com/v1/cookie`
-	request.get({ url }, (err, res, body) => {
-		if(!err && res.statusCode === 200) {
-			var result = JSON.parse(body)
-			// console.log(Object.keys(result[0]))
-			console.log(`fortune: ${result[0].fortune.message}`)
-			sendMessage(chatter, `fortune: ${result[0].fortune.message} \n lucky numbers: ${JSON.stringify(result[0].lotto.numbers)} \n english:${result[0].lesson.english} chinese:${result[0].lesson.chinese} prounciation: ${result[0].lesson.pronunciation}`, isGroupChat)
-		} else {
-			console.log(err)
-		}
-	})
-}
-
-function getCommands(rowText, chatter, isGroupChat) {
-	const commandList = [
-		{
-			name: 'g',
-			description: '.g <search term> - returns first result on google',
-		},
-		{
-			name: 'tweet',
-			description: '.tweet <message> - posts a tweet on the twittersphere',
-		},
-		{
-			name: 'twimg',
-			description: '.twimg - posts the last image posted in chat (non-url) to twitter',
-		},
-		{
-			name: 'wea',
-			description: '.wea <zipcode> - returns weather dipshit',
-		},
-		{
-			name: '8',
-			description: '.8 returns magic eight ball',
-		},
-		{
-			name: 'giphy',
-			description: '.giphy <term> - gets a gif',
-		},
-		{
-			name: 'u',
-			description: '.u <term> - gets urbandictionary result',
-		},
-		{
-			name: 'quote',
-			description: '.quote - gets a random quote',
-		}
-	]
-
-	let message = `commands: \n`
-	for (var i=0; i<commandList.length; i++) {
-		message += `.${commandList[i].name} - ${commandList[i].description}\n`
-	}
-	console.log(`sending ${message} to ${chatter}`)
-	sendMessage(chatter, message, isGroupChat);
-}
-
 function sendiMessage(rowText, chatter, isGroupChat) {
 	var text = rowText.substring(3);
 	var sendTo = text.split(' ')[0];
@@ -553,11 +443,9 @@ function tweetLatestImage(rowText, chatter, isGroupChat) {
 			// If successful, a media object will be returned.
 			console.log(media);
 
-			var postStatus = rowText.split('.twimg ')[1] ? rowText.split('.twimg ')[1].substring(0, 140) : '';
-
 			// Lets tweet it
 			var status = {
-				status: postStatus ,
+				status: rowText.split('.twimg ')[1].substring(0, 140),
 				media_ids: media.media_id_string // Pass the media id string
 			}
 
@@ -571,12 +459,76 @@ function tweetLatestImage(rowText, chatter, isGroupChat) {
 
 				console.log(tweet);
 
-				console.log(chatter, "tweeted: " + postStatus + " with image, url: https://twitter.com/typicalyospos/status/" + tweet.id_str);
-				sendMessage(chatter, "tweeted: " + postStatus + " with image, url: https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
+				console.log(chatter, "tweeted: " + rowText.split('.twimg ')[1].substring(0, 140) + " with image, url: https://twitter.com/typicalyospos/status/" + tweet.id_str);
+				sendMessage(chatter, "tweeted: " + rowText.split('.twimg ')[1].substring(0, 140) + " with image, url: https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
 				return;
 			});
 		}.bind(this));
 	}.bind(this));
+}
+
+function URLLookup(rowText, chatter, isGroupChat) {
+	var protocol = "http";
+	var index = rowText.indexOf('http://');
+	if (index === -1) {
+		index = rowText.indexOf('https://');
+		protocol = "https";
+	}
+
+	var url = rowText.split(protocol + '://')[1]; // get everything after the protocol
+	console.log(url);
+
+	var htp = {};
+	if (protocol === 'http') {
+		htp = require('follow-redirects').http;
+	} else {
+		htp = require('follow-redirects').https;
+	}
+
+	var path = "";
+	for (var i = 1; i < url.split('/').length; i++) {
+		var temp = url.split('/')[i]
+		if (temp.indexOf(' ') > -1) {
+			temp = temp.split(' ')[0];
+		}
+
+		path += '/' + temp;
+	}
+
+	var options = {
+		host: ((url.indexOf('/') > -1) ? url.split('/')[0] : url.split(' ')[0]), // host is everything before first /
+		path: path, // path is everything after, plus opening /
+	};
+
+	console.log(options);
+
+	var callback = function(response) {
+		var documentText = ''
+		response.on('data', function (chunk) {
+			documentText += chunk;
+		});
+
+		response.on('end', function () {
+			var regex = /<title>(.+?)<\/title>/igm;
+			var title = regex.exec(documentText);
+			if (!title) {
+				title = [];
+				title[1] = "no title";
+			}
+
+			console.log(chatter, "url: " + protocol + '://' + url.split('/')[0] + path + " title: " + title[1]);
+			sendMessage(chatter, "url: " + protocol + '://' + url.split('/')[0] + path + " title: " + title[1], isGroupChat);
+		});
+	}
+
+	var request = htp.request(options, callback);
+
+	request.on('error', function (error) {
+		console.log(chatter, "url: " + protocol + '://' + url.split('/')[0] + path + " error");
+		sendMessage(chatter, "url: " + protocol + '://' + url.split('/')[0] + path + " error", isGroupChat);
+	});
+
+	request.end();
 }
 
 function checkMessageText(messageId) {
@@ -617,7 +569,7 @@ function checkMessageText(messageId) {
 
 				var rowText = row.text;
 				// rowText = rowText.toLowerCase();
-				if (rowText.split(' ').length < 1 && rowText.indexOf('.') === 0) {
+				if (rowText.split(' ').length < 2 && rowText.indexOf('.') === 0) {
 					console.log('dropping: ' + rowText);
 					return;
 				}
@@ -631,7 +583,7 @@ function checkMessageText(messageId) {
 					tweetSearch(rowText, chatter, isGroupChat);
 				} else if (rowText.split(' ', 1)[0] === '.tweet') {
 					tweetStatus(rowText, chatter, isGroupChat);
-				} else if (rowText === '.twimg') {
+				} else if (rowText.split(' ', 1)[0] === '.twimg') {
 					tweetLatestImage(rowText, chatter, isGroupChat);
 				} else if (rowText.split(' ', 1)[0] === '.reply') {
 					tweetReply(rowText, chatter, isGroupChat);
@@ -643,22 +595,14 @@ function checkMessageText(messageId) {
 					urbandictionarySearch(rowText, chatter, isGroupChat);
 				} else if (rowText.split(' ', 1)[0] === '.i') {
 					sendiMessage(rowText, chatter, isGroupChat);
+				} else if (rowText.split(' ', 1)[0] === '.r') {
+					applescript.execFile(__dirname + '/send_return.AppleScript', [], function(err, result) {});
 				} else if (rowText.split(' ', 1)[0] === '.yospost') {
 					SANewThread(rowText, chatter, isGroupChat);
 				} else if (rowText.split(' ', 1)[0] === '.yosreply') {
-					SAReplyThread(rowText, chatter, isGroupChat);
-				} else if (rowText === '.8') {
-					eightBall(rowText, chatter, isGroupChat);
-				} else if (rowText === '.quote') {
-					inspirationalQuote(rowText, chatter, isGroupChat);
-				} else if (rowText.split(' ', 1)[0] === '.giphy') {
-					giphySearch(rowText, chatter, isGroupChat);
-				} else if (rowText === '.fortune') {
-					getFortune(rowText, chatter, isGroupChat)
-				} else if (rowText === '.help') {
-					getCommands(rowText, chatter, isGroupChat)
-				} else if (rowText === '.trump') {
-					latestTrump(rowText, chatter, isGroupChat)
+					SAReplyThread(rowText, chatter, isGroupChat)
+				} else if (rowText.indexOf('http://') > -1 || rowText.indexOf('https://') > -1) {
+					URLLookup(rowText, chatter, isGroupChat);
 				}
 			}
 		});
@@ -666,8 +610,6 @@ function checkMessageText(messageId) {
 }
 
 function sendMessage(to, message, groupChat) {
-
-	console.log(`attempting to send ${message} to ${to} via imessagemodule...`)
 	imessagemodule.sendMessage(to, message);
 }
 
