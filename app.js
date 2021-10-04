@@ -631,7 +631,7 @@ function checkMessageText(messageId) {
 					tweetSearch(rowText, chatter, isGroupChat);
 				} else if (rowText.split(' ', 1)[0] === '.tweet') {
 					tweetStatus(rowText, chatter, isGroupChat);
-				} else if (rowText === '.twimg') {
+				} else if (rowText.split(' ', 1)[0] === '.twimg') {
 					tweetLatestImage(rowText, chatter, isGroupChat);
 				} else if (rowText.split(' ', 1)[0] === '.reply') {
 					tweetReply(rowText, chatter, isGroupChat);
