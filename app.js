@@ -17,10 +17,10 @@ var request = request.defaults({jar: true});
 var imessagemodule = require('iMessageModule');
 
 var client = new Twitter({
-	consumer_key: '',
-	consumer_secret: '',
-	access_token_key: '-',
-	access_token_secret: ''
+	consumer_key: 'oAbQbnnGuSv2oilc2Ht8f5ejl',
+	consumer_secret: 'uiJvmQ4PCqwlpPLIKWk5U9xQqh6qjROAI5j7WIwICV6dToiMpp',
+	access_token_key: '3078593574-JIALqk9u1WOkQ2lxjufOMWYUhjlEuGs1sazI9Tt',
+	access_token_secret: 'tzk2geF9J1OunuhyheTmid1AAoDV92vt8ahYJvocn0vUt'
 });
 
 var saAccount = {
@@ -30,7 +30,7 @@ var saAccount = {
 
 var giphyApiKey = ``
 
-var main_chat_title = '';
+var main_chat_title = `chinas one hole policy`;
 
 var exists = fs.existsSync(file);
 if (!exists) {
@@ -71,7 +71,7 @@ var sending = false;
 
 // stream status updates if they mention our user
 // update with @username
-client.stream('statuses/filter', {track: '@'},  function(stream){
+client.stream('statuses/filter', {track: '@typicalyospos'},  function(stream){
 	stream.on('data', function(tweet) {
 		// insert the chat that you want to send messages to here
 		var chatter = main_chat_title;
@@ -240,8 +240,8 @@ function saNewPostInThread(threadUrl, postText, callback) {
 function googleSearch(rowText, chatter, isGroupChat) {
 	var query = rowText.substring(3);
 		googleIt({'query': query}).then(res => {
-			console.log(chatter, `g: ${res[0].link}`, isGroupChat)
-			sendMessage(chatter, `g: ${res[0].link}`, isGroupChat)
+			console.log(chatter, `${res[0].link}`, isGroupChat)
+			sendMessage(chatter, `${res[0].link}`, isGroupChat)
 		}).catch(e => {
 			console.error(e)
 		})
@@ -314,7 +314,7 @@ function tweetStatus(rowText, chatter, isGroupChat) {
 		console.log(tweet);
 
 		console.log(chatter, "tweeted: " + rowText.split('.tweet ')[1].substring(0, 140) + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str);
-		sendMessage(chatter, "tweeted: " + rowText.split('.tweet ')[1].substring(0, 140) + ", url: https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
+		sendMessage(chatter, "https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
 		return;
 	});
 }
@@ -581,9 +581,9 @@ function tweetLatestImage(rowText, chatter, isGroupChat) {
 
 function checkMessageText(messageId) {
 	var SQL = "SELECT DISTINCT message.ROWID, handle.id, message.text, message.is_from_me, message.date, message.date_delivered, message.date_read, chat.chat_identifier, chat.display_name FROM message LEFT OUTER JOIN chat ON chat.room_name = message.cache_roomnames LEFT OUTER JOIN handle ON handle.ROWID = message.handle_id WHERE message.service = 'iMessage' AND message.ROWID = " + messageId + " ORDER BY message.date DESC LIMIT 500";
-	if (OLD_OSX) {
-		SQL = "SELECT DISTINCT message.ROWID, handle.id, message.text, message.is_from_me, message.date, message.date_delivered, message.date_read FROM message LEFT OUTER JOIN chat LEFT OUTER JOIN handle ON handle.ROWID = message.handle_id WHERE message.service = 'iMessage' AND message.ROWID = " + messageId + " ORDER BY message.date DESC LIMIT 500";
-	}
+	// if (OLD_OSX) {
+	// 	SQL = "SELECT DISTINCT message.ROWID, handle.id, message.text, message.is_from_me, message.date, message.date_delivered, message.date_read FROM message LEFT OUTER JOIN chat LEFT OUTER JOIN handle ON handle.ROWID = message.handle_id WHERE message.service = 'iMessage' AND message.ROWID = " + messageId + " ORDER BY message.date DESC LIMIT 500";
+	// }
 
 	db.serialize(function() {
 		var arr = [];
@@ -657,8 +657,6 @@ function checkMessageText(messageId) {
 					getFortune(rowText, chatter, isGroupChat)
 				} else if (rowText === '.help') {
 					getCommands(rowText, chatter, isGroupChat)
-				} else if (rowText === '.trump') {
-					latestTrump(rowText, chatter, isGroupChat)
 				}
 			}
 		});
