@@ -13,6 +13,8 @@ cd imessagebot
 
 npm install
 
+create .env and add necessary env variables
+
 node app
 ```
 
