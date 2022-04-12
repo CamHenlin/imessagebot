@@ -20,6 +20,7 @@
     "google-it": "^1.5.0",
     "imessagemodule": "0.3.0",
     "inspirational-quotes": "^1.0.8",
+    "osa": "^2.5.0",
     "querystring": "^0.2.0",
     "request": "^2.54.0",
     "sqlite3": "^4.0.4",

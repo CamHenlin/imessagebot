@@ -84,7 +84,7 @@ client.stream(
         chatter,
         "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text
       );
-      sendMessage(
+      sendNewMessage(
         chatter,
         "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text,
         true
@@ -274,7 +274,7 @@ function googleSearch(rowText, chatter, isGroupChat) {
   googleIt({ query: query })
     .then((res) => {
       console.log(chatter, `${res[0].link}`, isGroupChat);
-      sendMessage(chatter, `${res[0].link}`, isGroupChat);
+      sendNewMessage(chatter, `${res[0].link}`, isGroupChat);
     })
     .catch((e) => {
       console.error(e);
@@ -311,7 +311,7 @@ function weatherSearch(rowText, chatter, isGroupChat) {
           " low: " +
           wea.low
       );
-      sendMessage(
+      sendNewMessage(
         chatter,
         "w: " +
           rowText.substring(3) +
@@ -347,7 +347,7 @@ function tweetSearch(rowText, chatter, isGroupChat) {
           chatter,
           "t: " + rowText.substring(3) + ": no tweets found."
         );
-        sendMessage(
+        sendNewMessage(
           chatter,
           "t: " + rowText.substring(3) + ": no tweets found.",
           isGroupChat
@@ -363,7 +363,7 @@ function tweetSearch(rowText, chatter, isGroupChat) {
             " user: " +
             tweet.user.screen_name
         );
-        sendMessage(
+        sendNewMessage(
           chatter,
           "t: " +
             rowText.substring(3) +
@@ -389,7 +389,7 @@ function latestTrump(rowText, chatter, isGroupChat) {
       // console.log(`${JSON.stringify(tweet[0].entities.urls[0])}`)
       const trumpURL = tweet[0].entities.urls[0].expanded_url;
       console.log(chatter, `trump: ${trumpURL}`, isGroupChat);
-      sendMessage(chatter, `trump: ${trumpURL}`, isGroupChat);
+      sendNewMessage(chatter, `trump: ${trumpURL}`, isGroupChat);
     }
   );
 }
@@ -403,7 +403,7 @@ function tweetStatus(rowText, chatter, isGroupChat) {
       if (error) {
         console.log(error);
         console.log(response);
-        sendMessage(chatter, "error tweeting: " + error, isGroupChat);
+        sendNewMessage(chatter, "error tweeting: " + error, isGroupChat);
         return;
       }
 
@@ -416,7 +416,7 @@ function tweetStatus(rowText, chatter, isGroupChat) {
           ", url: https://twitter.com/typicalyospos/status/" +
           tweet.id_str
       );
-      sendMessage(
+      sendNewMessage(
         chatter,
         "https://twitter.com/typicalyospos/status/" + tweet.id_str,
         isGroupChat
@@ -437,7 +437,7 @@ function tweetReply(rowText, chatter, isGroupChat) {
       if (error) {
         console.log(error);
         console.log(response);
-        sendMessage(chatter, "error tweeting: " + error, isGroupChat);
+        sendNewMessage(chatter, "error tweeting: " + error, isGroupChat);
         return;
       }
 
@@ -452,7 +452,7 @@ function tweetReply(rowText, chatter, isGroupChat) {
           ", url: https://twitter.com/typicalyospos/status/" +
           tweet.id_str
       );
-      sendMessage(
+      sendNewMessage(
         chatter,
         "tweeted: " +
           reply +
@@ -479,7 +479,7 @@ function twitterFollow(rowText, chatter, isGroupChat) {
       if (error) {
         console.log(error);
         console.log(response);
-        sendMessage(
+        sendNewMessage(
           chatter,
           "error following: " + JSON.stringify(error),
           isGroupChat
@@ -493,7 +493,7 @@ function twitterFollow(rowText, chatter, isGroupChat) {
         chatter,
         "followed: " + rowText.split(".follow ")[1].substring(0, 140)
       );
-      sendMessage(
+      sendNewMessage(
         chatter,
         "followed: " + rowText.split(".follow ")[1].substring(0, 140),
         isGroupChat
@@ -512,7 +512,7 @@ function favoriteTweet(rowText, chatter, isGroupChat) {
       if (error) {
         console.log(error);
         console.log(response);
-        sendMessage(
+        sendNewMessage(
           chatter,
           "error favoriting: " + JSON.stringify(error),
           isGroupChat
@@ -523,7 +523,7 @@ function favoriteTweet(rowText, chatter, isGroupChat) {
       console.log(tweet);
 
       console.log(chatter, "favorited: " + rowText.split("status/")[1]);
-      sendMessage(
+      sendNewMessage(
         chatter,
         "favorited: " + rowText.split("status/")[1],
         isGroupChat
@@ -542,7 +542,7 @@ function urbandictionarySearch(rowText, chatter, isGroupChat) {
         chatter,
         "no urbandictionary entry for: " + rowText.substring(3)
       );
-      sendMessage(
+      sendNewMessage(
         chatter,
         "no urbandictionary entry for: " + rowText.substring(3),
         isGroupChat
@@ -558,7 +558,7 @@ function urbandictionarySearch(rowText, chatter, isGroupChat) {
         " url: " +
         data.permalink
     );
-    sendMessage(
+    sendNewMessage(
       chatter,
       "urbandictionary entry for: " +
         rowText.substring(3) +
@@ -575,13 +575,13 @@ function eightBall(rowText, chatter, isGroupChat) {
   var answer = eightball();
   console.log("eightball for " + rowText.substring(3));
   console.log("eight: " + answer);
-  sendMessage(chatter, "eight: " + answer, isGroupChat);
+  sendNewMessage(chatter, "eight: " + answer, isGroupChat);
 }
 
 function inspirationalQuote(rowText, chatter, isGroupChat) {
   var randomQuote = Quote.getRandomQuote();
   console.log("random quote: " + randomQuote);
-  sendMessage(chatter, "quote: " + randomQuote);
+  sendNewMessage(chatter, "quote: " + randomQuote);
 }
 
 function giphySearch(rowText, chatter, isGroupChat) {
@@ -594,7 +594,7 @@ function giphySearch(rowText, chatter, isGroupChat) {
       // console.log(Object.keys(results.data[0]))
       console.log(`giphy for ${rowText.substring(3)}`);
       console.log(`giphy: ${results.data[0].url}`);
-      sendMessage(chatter, `giphy: ${results.data[0].url}`, isGroupChat);
+      sendNewMessage(chatter, `giphy: ${results.data[0].url}`, isGroupChat);
     } else {
       console.log(err);
       //console.log(response);
@@ -611,7 +611,7 @@ function getFortune(rowText, chatter, isGroupChat) {
       var result = JSON.parse(body);
       // console.log(Object.keys(result[0]))
       console.log(`fortune: ${result[0].fortune.message}`);
-      sendMessage(
+      sendNewMessage(
         chatter,
         `fortune: ${
           result[0].fortune.message
@@ -670,18 +670,18 @@ function getCommands(rowText, chatter, isGroupChat) {
     message += `.${commandList[i].name} - ${commandList[i].description}\n`;
   }
   console.log(`sending ${message} to ${chatter}`);
-  sendMessage(chatter, message, isGroupChat);
+  sendNewMessage(chatter, message, isGroupChat);
 }
 
 function sendiMessage(rowText, chatter, isGroupChat) {
   var text = rowText.substring(3);
   var sendTo = text.split(" ")[0];
   text = rowText.substring(sendTo.length + 4);
-  sendMessage(sendTo, chatter + " says: " + text, true);
+  sendNewMessage(sendTo, chatter + " says: " + text, true);
   setTimeout(
     function () {
       console.log(chatter, "sent: " + text + " to: " + sendTo);
-      sendMessage(chatter, "sent: " + text + " to: " + sendTo, isGroupChat);
+      sendNewMessage(chatter, "sent: " + text + " to: " + sendTo, isGroupChat);
     }.bind(this),
     3000
   );
@@ -704,7 +704,7 @@ function SANewThread(rowText, chatter, isGroupChat) {
       chatter,
       "I did something on the forums! you better go check: http://forums.somethingawful.com/forumdisplay.php?forumid=219"
     );
-    sendMessage(
+    sendNewMessage(
       chatter,
       "I did something on the forums! you better go check: http://forums.somethingawful.com/forumdisplay.php?forumid=219",
       isGroupChat
@@ -735,7 +735,7 @@ function SAReplyThread(rowText, chatter, isGroupChat) {
       chatter,
       "I did something on the forums! you better go check: http://forums.somethingawful.com/forumdisplay.php?forumid=219"
     );
-    sendMessage(
+    sendNewMessage(
       chatter,
       "I did something on the forums! you better go check: http://forums.somethingawful.com/forumdisplay.php?forumid=219",
       isGroupChat
@@ -805,7 +805,7 @@ function tweetLatestImage(rowText, chatter, isGroupChat) {
               if (error) {
                 console.log(error);
                 console.log(response);
-                sendMessage(chatter, "error tweeting: " + error, isGroupChat);
+                sendNewMessage(chatter, "error tweeting: " + error, isGroupChat);
                 return;
               }
 
@@ -818,7 +818,7 @@ function tweetLatestImage(rowText, chatter, isGroupChat) {
                   " with image, url: https://twitter.com/typicalyospos/status/" +
                   tweet.id_str
               );
-              sendMessage(
+              sendNewMessage(
                 chatter,
                 "https://twitter.com/typicalyospos/status/" + tweet.id_str,
                 isGroupChat
@@ -934,6 +934,37 @@ function checkMessageText(messageId) {
 function sendMessage(to, message, groupChat) {
   console.log(`attempting to send ${message} to ${to} via imessagemodule...`);
   imessagemodule.sendMessage(to, message);
+}
+
+const sendNewMessage = ( SELECTED_CHATTER, message ) => {
+	return new Promise(async (resolve, reject) => {
+
+		const osaFunction = (SELECTED_CHATTER, message) => {
+
+			const Messages = Application('Messages')
+			let target
+	
+			try {
+
+				target = Messages.chats.whose({ id: SELECTED_CHATTER })[0]
+			} catch (e) {
+
+				// console.log(e)
+			}
+	
+			try {
+
+				Messages.send(message, { to: target })
+			} catch (e) {
+
+				// console.log(e)
+			}
+
+			return {}
+		}
+
+		return osa(osaFunction)(SELECTED_CHATTER, message).then(resolve)
+	})
 }
 
 db.serialize(
