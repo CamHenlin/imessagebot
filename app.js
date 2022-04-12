@@ -16,11 +16,12 @@ var request = require('request');
 var request = request.defaults({jar: true});
 var imessagemodule = require('iMessageModule');
 
+require('dotenv').config()
 var client = new Twitter({
-	consumer_key: 'oAbQbnnGuSv2oilc2Ht8f5ejl',
-	consumer_secret: 'uiJvmQ4PCqwlpPLIKWk5U9xQqh6qjROAI5j7WIwICV6dToiMpp',
-	access_token_key: '3078593574-JIALqk9u1WOkQ2lxjufOMWYUhjlEuGs1sazI9Tt',
-	access_token_secret: 'tzk2geF9J1OunuhyheTmid1AAoDV92vt8ahYJvocn0vUt'
+	consumer_key: process.env.TWITTER_CONSUMER_KEY,
+	consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
+	access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
+	access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
 });
 
 var saAccount = {
@@ -30,7 +31,7 @@ var saAccount = {
 
 var giphyApiKey = ``
 
-var main_chat_title = `DoorDash Support`;
+var main_chat_title = process.env.GROUPCHAT_TITLE || '';
 
 var exists = fs.existsSync(file);
 
