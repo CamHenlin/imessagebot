@@ -79,19 +79,19 @@ client.stream(
   function (stream) {
     stream.on("data", function (tweet) {
       // insert the chat that you want to send messages to here
-      var chatter = main_chat_title;
-      console.log(
-        chatter,
-        "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text
-      );
-      if (chatter && chatter.length) {
+      if (main_chat_title && main_chat_title.length) {
+        var chatter = main_chat_title;
+        console.log(
+          chatter,
+          "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text
+        );
         sendMessage(
           chatter,
           "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text,
           true
         );
       } else {
-        console.log('no groupchat defined to send reply')
+        console.log("no groupchat defined to send reply");
       }
     });
 
