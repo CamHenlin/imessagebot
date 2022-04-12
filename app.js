@@ -30,7 +30,7 @@ var saAccount = {
 
 var giphyApiKey = ``
 
-var main_chat_title = `chinas one hole policy`;
+var main_chat_title = `DoorDash Support`;
 
 var exists = fs.existsSync(file);
 if (!exists) {
@@ -572,7 +572,7 @@ function tweetLatestImage(rowText, chatter, isGroupChat) {
 				console.log(tweet);
 
 				console.log(chatter, "tweeted: " + postStatus + " with image, url: https://twitter.com/typicalyospos/status/" + tweet.id_str);
-				sendMessage(chatter, "tweeted: " + postStatus + " with image, url: https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
+				sendMessage(chatter, "https://twitter.com/typicalyospos/status/" + tweet.id_str, isGroupChat);
 				return;
 			});
 		}.bind(this));
