@@ -33,9 +33,6 @@ var giphyApiKey = ``
 var main_chat_title = `DoorDash Support`;
 
 var exists = fs.existsSync(file);
-if (!exists) {
-	return;
-}
 
 // discover if we are running and old version of OS X or not
 var OLD_OSX = false;
