@@ -84,11 +84,15 @@ client.stream(
         chatter,
         "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text
       );
-      sendMessage(
-        chatter,
-        "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text,
-        true
-      );
+      if (chatter && chatter.length) {
+        sendMessage(
+          chatter,
+          "@" + tweet.user.screen_name + " tweeted at us: " + tweet.text,
+          true
+        );
+      } else {
+        console.log('no groupchat defined to send reply')
+      }
     });
 
     stream.on("error", function (error) {
@@ -931,41 +935,37 @@ function checkMessageText(messageId) {
   });
 }
 
-function sendMessage(to, message, groupChat) {
+async function sendMessage(to, message, groupChat) {
   console.log(`attempting to send ${message} to ${to} via imessagemodule...`);
   imessagemodule.sendMessage(to, message);
+  // const messagePromise = sendNewMessage( to, message)
+  // await Promise.all(messagePromise)
 }
 
-const sendNewMessage = ( SELECTED_CHATTER, message ) => {
-	return new Promise(async (resolve, reject) => {
+const sendNewMessage = (SELECTED_CHATTER, message) => {
+  return new Promise(async (resolve, reject) => {
+    const osaFunction = (SELECTED_CHATTER, message) => {
+      const Messages = Application("Messages");
+      let target;
 
-		const osaFunction = (SELECTED_CHATTER, message) => {
+      try {
+        target = Messages.chats.whose({ id: SELECTED_CHATTER })[0];
+      } catch (e) {
+        // console.log(e)
+      }
 
-			const Messages = Application('Messages')
-			let target
-	
-			try {
+      try {
+        Messages.send(message, { to: target });
+      } catch (e) {
+        // console.log(e)
+      }
 
-				target = Messages.chats.whose({ id: SELECTED_CHATTER })[0]
-			} catch (e) {
+      return {};
+    };
 
-				// console.log(e)
-			}
-	
-			try {
-
-				Messages.send(message, { to: target })
-			} catch (e) {
-
-				// console.log(e)
-			}
-
-			return {}
-		}
-
-		return osa(osaFunction)(SELECTED_CHATTER, message).then(resolve)
-	})
-}
+    return osa(osaFunction)(SELECTED_CHATTER, message).then(resolve);
+  });
+};
 
 db.serialize(
   function () {
