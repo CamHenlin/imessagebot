@@ -402,7 +402,7 @@ function tweetStatus(rowText, chatter, isGroupChat) {
   console.log("tweet " + rowText.split(".tweet ")[1]);
   client.post(
     "statuses/update",
-    { status: rowText.split(".tweet ")[1].substring(0, 140) },
+    { status: rowText.split(".tweet ")[1].substring(0, 280) },
     function (error, tweet, response) {
       if (error) {
         console.log(error);
@@ -416,7 +416,7 @@ function tweetStatus(rowText, chatter, isGroupChat) {
       console.log(
         chatter,
         "tweeted: " +
-          rowText.split(".tweet ")[1].substring(0, 140) +
+          rowText.split(".tweet ")[1].substring(0, 280) +
           ", url: https://twitter.com/typicalyospos/status/" +
           tweet.id_str
       );
@@ -793,7 +793,7 @@ function tweetLatestImage(rowText, chatter, isGroupChat) {
           console.log(media);
 
           var postStatus = rowText.split(".twimg ")[1]
-            ? rowText.split(".twimg ")[1].substring(0, 140)
+            ? rowText.split(".twimg ")[1].substring(0, 280)
             : "";
 
           // Lets tweet it
